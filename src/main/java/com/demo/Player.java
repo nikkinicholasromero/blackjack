@@ -34,7 +34,12 @@ public class Player {
     }
 
     public void initializeHand() {
-        this.hands.clear();
-        this.hands.add(new Hand());
+        hands.clear();
+        hands.add(new Hand());
+    }
+
+    public Action decide(Hand hand) {
+        // TODO: Add decision chart call from here
+        return Action.STAND;
     }
 }

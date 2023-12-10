@@ -37,4 +37,8 @@ public class Dealer {
 
         return total;
     }
+
+    public void initializeHand() {
+        hand.clear();
+    }
 }

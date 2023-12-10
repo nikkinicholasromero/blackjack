@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class Hand {
     private final List<Card> cards;
+    private boolean won = false;
 
     public Hand() {
         this.cards = new ArrayList<>();
@@ -38,8 +39,11 @@ public class Hand {
         return total;
     }
 
-    public Action decide() {
-        // add decision chart call from here
-        return Action.DOUBLE;
+    public void setWon(boolean won) {
+        this.won = won;
+    }
+
+    public boolean getWon() {
+        return won;
     }
 }
