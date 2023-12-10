@@ -37,4 +37,9 @@ public class Hand {
 
         return total;
     }
+
+    public Action decide() {
+        // add decision chart call from here
+        return Action.DOUBLE;
+    }
 }

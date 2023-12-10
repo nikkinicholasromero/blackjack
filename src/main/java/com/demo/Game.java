@@ -76,5 +76,30 @@ public class Game {
         }
 
         // hit, stand, surrender, double (if two cards pa lang), split (if twin)
+        roundPlayers.forEach(player -> {
+            player.hands().forEach(hand -> {
+                Action action = hand.decide();
+
+                if (Action.STAND.equals(action)) {
+                    // move to next hand
+                } else if (Action.HIT.equals(action)) {
+                    hand.drawCard(shoe.draw());
+                } else if (Action.SURRENDER.equals(action)) {
+                    // remove hand
+                } else if (Action.DOUBLE.equals(action)) {
+                    // idk
+                } else if (Action.SPLIT.equals(action)) {
+                    // create
+                } else {
+                    // invalid
+                }
+            });
+        });
+
+        // dealer deals himself
+        // decide who won/lost
+
+        dealer.displayHand();
+        roundPlayers.forEach(Player::displayHands);
     }
 }
