@@ -12,12 +12,8 @@ public class Hand {
         this.cards = new ArrayList<>();
     }
 
-    public void drawCard(Card card) {
+    public void addCard(Card card) {
         cards.add(card);
-    }
-
-    public void displayHand(String name) {
-        System.out.println(name + ": " + cards + ", sum: " + computeHand());
     }
 
     public int computeHand() {

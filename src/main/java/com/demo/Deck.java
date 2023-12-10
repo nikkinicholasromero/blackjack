@@ -17,10 +17,6 @@ public class Deck {
         Collections.shuffle(cards);
     }
 
-    public boolean isEmpty() {
-        return cards.isEmpty();
-    }
-
     public Card draw() {
         Card card = cards.get(0);
         cards.remove(card);

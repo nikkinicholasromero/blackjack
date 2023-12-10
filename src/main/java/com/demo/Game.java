@@ -2,21 +2,10 @@ package com.demo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Game {
-    public static void main(String[] args) {
-        Player player1 = new Player("RJ", 20_000);
-        Player player2 = new Player("Erwin", 20_000);
-        Player player3 = new Player("Nikki", 20_000);
-        Game game = new Game(List.of(player1, player2, player3), 1000, 6);
-        int dealCounter = 0;
-        while (game.hasPlayers()) {
-            dealCounter++;
-            game.startGame();
-        };
-        System.out.println("Ended in " + dealCounter + " deals. ");
-    }
+    private static final List<Integer> POTENTIAL_BLACK_JACK_VALUES = List.of(10, 11);
+    private static final Integer BLACK_JACK_VALUE = 21;
 
     private final Dealer dealer;
     private final List<Player> players;
@@ -34,26 +23,33 @@ public class Game {
         this.deckCount = deckCount;
     }
 
-    public void startGame() {
-        // Note: Initialize shoe and dealer/player hands
+    public void deal() {
+        if (!hasPlayers()) {
+            return;
+        }
+
+        // Note: Initialize shoe
+        // Note: Initialize dealer and players hands
+        // Note: Take initial bet
         shoe = new Shoe(deckCount);
         List<Player> roundPlayers = new ArrayList<>(players);
         roundPlayers.forEach(Player::initializeHand);
         dealer.initializeHand();
+        players.forEach(player -> player.bet(minimumBet));
 
         // Note: Initial deal
         roundPlayers.forEach(player ->
-            player.hands().forEach(hand -> hand.drawCard(shoe.draw())));
-        dealer.drawCard(shoe.draw());
+            player.getHands().forEach(hand -> hand.addCard(shoe.draw())));
+        dealer.getHand().addCard(shoe.draw());
         roundPlayers.forEach(player ->
-            player.hands().forEach(hand -> hand.drawCard(shoe.draw())));
+            player.getHands().forEach(hand -> hand.addCard(shoe.draw())));
 
         // Note: Determine initial black jack win
-        int dealerHandValue = dealer.computeHand();
-        if (dealerHandValue != 10 && dealerHandValue != 11) {
+        int dealerHandValue = dealer.getHand().computeHand();
+        if (!POTENTIAL_BLACK_JACK_VALUES.contains(dealerHandValue)) {
             roundPlayers.forEach(player ->
-                player.hands().forEach(hand -> {
-                    if (hand.computeHand() == 21) {
+                player.getHands().forEach(hand -> {
+                    if (hand.computeHand() == BLACK_JACK_VALUE) {
                         player.payout((minimumBet * 2) + (minimumBet / 2));
                         hand.setWon(true);
                     }
@@ -61,10 +57,10 @@ public class Game {
 
             // Note: Remove hands that won already
             roundPlayers.forEach(player ->
-                    player.hands().removeIf(Hand::getWon));
+                    player.getHands().removeIf(Hand::getWon));
 
             // Note: Remove players where all hands won already
-            roundPlayers.removeIf(player -> player.hands().isEmpty());
+            roundPlayers.removeIf(player -> player.getHands().isEmpty());
         }
 
         // TODO: Decide action per hand (
@@ -75,17 +71,30 @@ public class Game {
         //  split (allowed if pair)
 
         // Note: Dealer deals himself until > 16 or bust
-        while (dealer.computeHand() > 16) {
+        while (dealer.getHand().computeHand() > 16) {
             dealer.drawCard(shoe.draw());
         }
         // TODO: Decide who won/lost (payout)
 
         // Note: Remove players that can't afford minimumBet anymore
         players.removeIf(player -> player.getBudget() < minimumBet);
-        players.forEach(player -> player.bet(minimumBet));
+
     }
 
     public boolean hasPlayers() {
         return !players.isEmpty();
+    }
+
+    public static void main(String[] args) {
+        Player player1 = new Player(20_000);
+        Player player2 = new Player(20_000);
+        Player player3 = new Player(20_000);
+        Game game = new Game(List.of(player1, player2, player3), 1000, 6);
+        int dealCounter = 0;
+        while (game.hasPlayers()) {
+            dealCounter++;
+            game.deal();
+        };
+        System.out.println("Ended in " + dealCounter + " deals. ");
     }
 }
