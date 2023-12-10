@@ -107,9 +107,9 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        Player player1 = new Player(20_000);
-        Player player2 = new Player(20_000);
-        Player player3 = new Player(20_000);
+        Player player1 = new Player(20_000, new BasicStrategy());
+        Player player2 = new Player(20_000, new BasicStrategy());
+        Player player3 = new Player(20_000, new BasicStrategy());
         Game game = new Game(List.of(player1, player2, player3), 1000, 6);
         int dealCounter = 0;
         while (game.hasPlayers()) {

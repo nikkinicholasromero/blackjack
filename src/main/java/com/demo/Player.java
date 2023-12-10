@@ -5,9 +5,11 @@ import java.util.*;
 public class Player {
     private int budget;
     private List<Hand> hands;
+    private final Strategy strategy;
 
-    public Player(int budget) {
+    public Player(int budget, Strategy strategy) {
         this.budget = budget;
+        this.strategy = strategy;
     }
 
     public void initializeHand() {
@@ -31,8 +33,7 @@ public class Player {
         return budget;
     }
 
-    // TODO: Add decision chart call from here
-    public Action decide(Hand hand) {
-        return Action.STAND;
+    public Action decide(Card playerUpCard, Hand playerHand, int minimumBet) {
+        return strategy.decide(playerUpCard, playerHand, budget >= minimumBet);
     }
 }
