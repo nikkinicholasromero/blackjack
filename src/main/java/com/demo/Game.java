@@ -6,6 +6,7 @@ import java.util.List;
 public class Game {
     private static final List<Integer> POTENTIAL_BLACK_JACK_VALUES = List.of(10, 11);
     private static final Integer BLACK_JACK_VALUE = 21;
+    private static final Integer DEALER_MINIMUM_HAND_VALUE = 17;
 
     private final Dealer dealer;
     private final List<Player> players;
@@ -45,8 +46,8 @@ public class Game {
             player.getHands().forEach(hand -> hand.addCard(shoe.draw())));
 
         // Note: Determine initial black jack win
-        int dealerHandValue = dealer.getHand().computeHand();
-        if (!POTENTIAL_BLACK_JACK_VALUES.contains(dealerHandValue)) {
+        int initialDealerHandValue = dealer.getHand().computeHand();
+        if (!POTENTIAL_BLACK_JACK_VALUES.contains(initialDealerHandValue)) {
             roundPlayers.forEach(player ->
                 player.getHands().forEach(hand -> {
                     if (hand.computeHand() == BLACK_JACK_VALUE) {
@@ -71,10 +72,32 @@ public class Game {
         //  split (allowed if pair)
 
         // Note: Dealer deals himself until > 16 or bust
-        while (dealer.getHand().computeHand() > 16) {
+        while (dealer.getHand().computeHand() >= DEALER_MINIMUM_HAND_VALUE) {
             dealer.drawCard(shoe.draw());
         }
-        // TODO: Decide who won/lost (payout)
+
+        // Note: Payout
+        int finalDealerHandValue = dealer.getHand().computeHand();
+        boolean dealerHandBust = finalDealerHandValue > BLACK_JACK_VALUE;
+        if (dealerHandBust) {
+            // Note: If dealer is bust, payout each player hand that is not bust
+            roundPlayers.forEach(player -> player.getHands().forEach(hand -> {
+                boolean playerHandBust = hand.computeHand() <= BLACK_JACK_VALUE;
+                if (playerHandBust) {
+                    player.payout(minimumBet * 2);
+                }
+            }));
+        } else {
+            // Note: If dealer is not bust, payout each player hand that beats the dealer hand
+            roundPlayers.forEach(player -> player.getHands().forEach(hand -> {
+                int finalPlayerHandValue = hand.computeHand();
+                if (finalPlayerHandValue > finalDealerHandValue) {
+                    player.payout(minimumBet * 2);
+                } else if (finalPlayerHandValue == finalDealerHandValue) {
+                    player.payout(minimumBet);
+                }
+            }));
+        }
 
         // Note: Remove players that can't afford minimumBet anymore
         players.removeIf(player -> player.getBudget() < minimumBet);
