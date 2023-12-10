@@ -41,11 +41,11 @@ public class Hand {
         return total;
     }
 
-    public void setWon(boolean won) {
-        this.won = won;
+    public void setWon() {
+        this.won = true;
     }
 
-    public boolean getWon() {
+    public boolean won() {
         return won;
     }
 

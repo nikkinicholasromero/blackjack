@@ -17,7 +17,7 @@ public class Player {
         hands.add(new Hand());
     }
 
-    public List<Hand> getHands() {
+    public List<Hand> hands() {
         return hands;
     }
 
@@ -29,7 +29,7 @@ public class Player {
         budget += win;
     }
 
-    public int getBudget() {
+    public int budget() {
         return budget;
     }
 

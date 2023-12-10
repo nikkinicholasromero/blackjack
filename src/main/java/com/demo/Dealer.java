@@ -7,7 +7,7 @@ public class Dealer {
         hand = new Hand();
     }
 
-    public Hand getHand() {
+    public Hand hand() {
         return hand;
     }
 }
