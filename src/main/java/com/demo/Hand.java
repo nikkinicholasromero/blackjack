@@ -7,6 +7,7 @@ import java.util.Objects;
 public class Hand {
     private final List<Card> cards;
     private boolean won = false;
+    private boolean bust = false;
 
     public Hand() {
         this.cards = new ArrayList<>();
@@ -41,5 +42,13 @@ public class Hand {
 
     public boolean getWon() {
         return won;
+    }
+
+    public void setBust(boolean bust) {
+        this.bust = bust;
+    }
+
+    public boolean getBust() {
+        return bust;
     }
 }

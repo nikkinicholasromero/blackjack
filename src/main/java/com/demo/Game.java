@@ -66,6 +66,13 @@ public class Game {
 
         // TODO: Decide action per player hand
 
+        // Note: Remove hands that bust
+        roundPlayers.forEach(player ->
+                player.getHands().removeIf(Hand::getBust));
+
+        // Note: Remove players where all hands bust already
+        roundPlayers.removeIf(player -> player.getHands().isEmpty());
+
         // Note: Dealer deals himself until > 16 or bust
         while (dealer.getHand().computeValue() >= DEALER_MINIMUM_HAND_VALUE) {
             dealer.drawCard(shoe.draw());
@@ -75,12 +82,9 @@ public class Game {
         int finalDealerHandValue = dealer.getHand().computeValue();
         boolean dealerHandBust = finalDealerHandValue > BLACK_JACK_VALUE;
         if (dealerHandBust) {
-            // Note: If dealer is bust, payout each player hand that is not bust
+            // Note: If dealer is bust, payout each player hand
             roundPlayers.forEach(player -> player.getHands().forEach(hand -> {
-                boolean playerHandBust = hand.computeValue() <= BLACK_JACK_VALUE;
-                if (playerHandBust) {
-                    player.payout(minimumBet * 2);
-                }
+                player.payout(minimumBet * 2);
             }));
         } else {
             // Note: If dealer is not bust, payout each player hand that beats the dealer hand
