@@ -16,7 +16,7 @@ public class Hand {
         cards.add(card);
     }
 
-    public int computeHand() {
+    public int computeValue() {
         int total = 0;
 
         cards.sort((a, b) -> b.rank().value() - a.rank().value());

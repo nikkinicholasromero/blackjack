@@ -6,14 +6,14 @@ public enum Suit {
     SPADE("♠"),
     CLOVER("♣");
 
-    private final String name;
+    private final String symbol;
 
-    Suit(String name) {
-        this.name = name;
+    Suit(String symbol) {
+        this.symbol = symbol;
     }
 
     @Override
     public String toString() {
-        return name;
+        return symbol;
     }
 }

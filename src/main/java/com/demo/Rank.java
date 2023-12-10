@@ -15,11 +15,11 @@ public enum Rank {
     TWO("2", 2),
     ACE("A", 0);
 
-    private final String name;
+    private final String symbol;
     private final int value;
 
-    Rank(String name, int value) {
-        this.name = name;
+    Rank(String symbol, int value) {
+        this.symbol = symbol;
         this.value = value;
     }
 
@@ -29,6 +29,6 @@ public enum Rank {
 
     @Override
     public String toString() {
-        return name;
+        return symbol;
     }
 }
