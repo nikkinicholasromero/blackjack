@@ -67,7 +67,12 @@ public class Game {
             roundPlayers.removeIf(player -> player.hands().isEmpty());
         }
 
-        // TODO: Decide action per card (stand, surrender, double (if two cards pa), split (if pair))
+        // TODO: Decide action per hand (
+        //  stand
+        //  hit
+        //  surrender
+        //  double (allowed if two cards pa lang)
+        //  split (allowed if pair)
 
         // Note: Dealer deals himself until > 16 or bust
         while (dealer.computeHand() > 16) {
