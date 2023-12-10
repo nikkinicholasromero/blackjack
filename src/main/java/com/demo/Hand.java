@@ -15,6 +15,11 @@ public class Hand {
 
     public void addCard(Card card) {
         cards.add(card);
+
+        int handValue = computeValue();
+        if (handValue > 21) {
+            bust = true;
+        }
     }
 
     public int computeValue() {
@@ -44,11 +49,7 @@ public class Hand {
         return won;
     }
 
-    public void setBust(boolean bust) {
-        this.bust = bust;
-    }
-
-    public boolean getBust() {
+    public boolean bust() {
         return bust;
     }
 }

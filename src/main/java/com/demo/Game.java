@@ -5,8 +5,6 @@ import java.util.List;
 
 public class Game {
     private static final List<Integer> POTENTIAL_BLACK_JACK_VALUES = List.of(10, 11);
-    private static final Integer BLACK_JACK_VALUE = 21;
-    private static final Integer DEALER_MINIMUM_HAND_VALUE = 17;
 
     private final Dealer dealer;
     private final List<Player> players;
@@ -50,7 +48,7 @@ public class Game {
         if (!POTENTIAL_BLACK_JACK_VALUES.contains(initialDealerHandValue)) {
             roundPlayers.forEach(player ->
                 player.getHands().forEach(hand -> {
-                    if (hand.computeValue() == BLACK_JACK_VALUE) {
+                    if (hand.computeValue() == 21) {
                         player.payout((minimumBet * 2) + (minimumBet / 2));
                         hand.setWon(true);
                     }
@@ -68,26 +66,26 @@ public class Game {
 
         // Note: Remove hands that bust
         roundPlayers.forEach(player ->
-                player.getHands().removeIf(Hand::getBust));
+                player.getHands().removeIf(Hand::bust));
 
         // Note: Remove players where all hands bust already
         roundPlayers.removeIf(player -> player.getHands().isEmpty());
 
         // Note: Dealer deals himself until > 16 or bust
-        while (dealer.getHand().computeValue() >= DEALER_MINIMUM_HAND_VALUE) {
+        while (dealer.getHand().computeValue() >= 17) {
             dealer.drawCard(shoe.draw());
         }
 
         // Note: Payout
-        int finalDealerHandValue = dealer.getHand().computeValue();
-        boolean dealerHandBust = finalDealerHandValue > BLACK_JACK_VALUE;
-        if (dealerHandBust) {
+        if (dealer.getHand().bust()) {
             // Note: If dealer is bust, payout each player hand
             roundPlayers.forEach(player -> player.getHands().forEach(hand -> {
                 player.payout(minimumBet * 2);
             }));
         } else {
             // Note: If dealer is not bust, payout each player hand that beats the dealer hand
+            int finalDealerHandValue = dealer.getHand().computeValue();
+
             roundPlayers.forEach(player -> player.getHands().forEach(hand -> {
                 int finalPlayerHandValue = hand.computeValue();
                 if (finalPlayerHandValue > finalDealerHandValue) {

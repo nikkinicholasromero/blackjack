@@ -20,6 +20,11 @@ public class Shoe {
     public Card draw() {
         Random random = new Random();
         int targetDeck = random.nextInt(0, deckCount);
-        return decks.get(targetDeck).draw();
+        Deck deck = decks.get(targetDeck);
+        Card card = deck.draw();
+        if (deck.isEmpty()) {
+            decks.remove(deck);
+        }
+        return card;
     }
 }

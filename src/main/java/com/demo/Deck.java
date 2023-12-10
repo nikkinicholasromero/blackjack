@@ -24,4 +24,8 @@ public class Deck {
         cards.remove(card);
         return card;
     }
+
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
 }
