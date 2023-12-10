@@ -73,7 +73,7 @@ public class Game {
 
         // Note: Dealer deals himself until > 16 or bust
         while (dealer.getHand().computeValue() >= 17) {
-            dealer.drawCard(shoe.draw());
+            dealer.getHand().addCard(shoe.draw());
         }
 
         // Note: Payout
