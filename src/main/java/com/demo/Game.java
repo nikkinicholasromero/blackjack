@@ -79,15 +79,16 @@ public class Game {
                 // TODO: HIT & SPLIT
             }
         }
-
         roundPlayers.forEach(player -> player.hands().removeIf(Hand::surrendered));
         roundPlayers.forEach(player -> player.hands().removeIf(Hand::bust));
         roundPlayers.removeIf(player -> player.hands().isEmpty());
 
-        while (!dealer.hand().bust() && dealer.hand().computeValue() < 16) {
+        // Dealer deals self until bust or <= 17
+        while (!dealer.hand().bust() && dealer.hand().computeValue() <= 17) {
             dealer.hand().addCard(shoe.draw());
         }
 
+        // Payout
         if (dealer.hand().bust()) {
             roundPlayers.forEach(player -> player.hands().forEach(hand -> {
                 int multiplier = hand.doubled() ? 2 : 1;
@@ -115,6 +116,17 @@ public class Game {
     }
 
     public static void main(String[] args) {
+        int count = 0;
+        for (long i = 0; i < 10000; i++) {
+            count += counter();
+        }
+        System.out.println(count + "/" + 30000);
+    }
+
+    private static int counter() {
+        boolean player1out = false;
+        boolean player2out = false;
+        boolean player3out = false;
         Player player1 = new Player("Erwin", 20_000, new BasicStrategy());
         Player player2 = new Player("RJ", 20_000, new BasicStrategy());
         Player player3 = new Player("Nikki", 20_000, new BasicStrategy());
@@ -123,19 +135,33 @@ public class Game {
         while (game.hasPlayers()) {
             dealCounter++;
             game.deal();
-            if (player1.budget() >= 30_000) {
+            if (!player1out && player1.budget() >= 25_000) {
                 game.out(player1);
+                player1out = true;
             }
-            if (player2.budget() >= 30_000) {
+            if (!player2out && player2.budget() >= 25_000) {
                 game.out(player2);
+                player2out = true;
             }
-            if (player3.budget() >= 30_000) {
+            if (!player3out && player3.budget() >= 25_000) {
                 game.out(player3);
+                player3out = true;
             }
         };
-        System.out.println("Ended in " + dealCounter + " deals. ");
-        System.out.println("Player1: " + player1.budget());
-        System.out.println("Player2: " + player2.budget());
-        System.out.println("Player3: " + player3.budget());
+        int count = 0;
+        if (player1out) {
+            count++;
+        }
+        if (player2out) {
+            count++;
+        }
+        if (player3out) {
+            count++;
+        }
+        return count;
+//        System.out.println("Ended in " + dealCounter + " deals. ");
+//        System.out.println("Player1: " + player1.budget());
+//        System.out.println("Player2: " + player2.budget());
+//        System.out.println("Player3: " + player3.budget());
     }
 }
