@@ -97,8 +97,8 @@ public class Game {
         // Note: Remove players where all hands bust already
         roundPlayers.removeIf(player -> player.hands().isEmpty());
 
-        // Note: Dealer deals himself until > 16 or bust
-        while (dealer.hand().computeValue() >= 17) {
+        // Note: Dealer deals himself until bust or < 16
+        while (dealer.hand().bust() || dealer.hand().computeValue() < 16) {
             dealer.hand().addCard(shoe.draw());
         }
 
@@ -133,9 +133,9 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        Player player1 = new Player(20_000, new BasicStrategy());
-        Player player2 = new Player(20_000, new BasicStrategy());
-        Player player3 = new Player(20_000, new BasicStrategy());
+        Player player1 = new Player("Erwin", 20_000, new BasicStrategy());
+        Player player2 = new Player("RJ", 20_000, new BasicStrategy());
+        Player player3 = new Player("Nikki", 20_000, new BasicStrategy());
         Game game = new Game(List.of(player1, player2, player3), 1000, 6);
         int dealCounter = 0;
         while (game.hasPlayers()) {

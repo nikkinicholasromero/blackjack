@@ -3,13 +3,19 @@ package com.demo;
 import java.util.*;
 
 public class Player {
+    private String name;
     private int budget;
     private List<Hand> hands;
     private final Strategy strategy;
 
-    public Player(int budget, Strategy strategy) {
+    public Player(String name, int budget, Strategy strategy) {
+        this.name = name;
         this.budget = budget;
         this.strategy = strategy;
+    }
+
+    public String name() {
+        return name;
     }
 
     public void initializeHand() {
