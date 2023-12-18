@@ -39,7 +39,7 @@ public class Player {
         return budget;
     }
 
-    public Action decide(Card dealerUpCard, Hand playerHand, int minimumBet) {
-        return strategy.decide(dealerUpCard, playerHand, budget >= minimumBet);
+    public Action decide(Hand dealerHand, Hand playerHand, int minimumBet) {
+        return strategy.decide(dealerHand, playerHand, budget >= minimumBet);
     }
 }
