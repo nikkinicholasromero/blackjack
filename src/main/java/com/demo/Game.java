@@ -39,7 +39,8 @@ public class Game {
         // Note: Initial deal
         roundPlayers.forEach(player ->
             player.hands().forEach(hand -> hand.addCard(shoe.draw())));
-        dealer.hand().addCard(shoe.draw());
+        Card dealerUpCard = shoe.draw();
+        dealer.hand().addCard(dealerUpCard);
         roundPlayers.forEach(player ->
             player.hands().forEach(hand -> hand.addCard(shoe.draw())));
 
@@ -63,6 +64,31 @@ public class Game {
         }
 
         // TODO: Decide action per player hand
+        for (Player player : roundPlayers) {
+            for (Hand hand : player.hands()) {
+                Action action = player.decide(dealerUpCard, hand, minimumBet);
+                if (Action.STAND.equals(action)) {
+                    hand.setStood();
+                    break;
+                }
+                if (Action.SURRENDER.equals(action)) {
+                   player.payout(minimumBet / 2);
+                   hand.setSurrendered();
+                   break;
+                }
+                if (Action.DOUBLE.equals(action)) {
+                    player.bet(minimumBet);
+                    hand.addCard(shoe.draw());
+                    hand.setDoubled();
+                    break;
+                }
+                // TODO: HIT & SPLIT
+            }
+        }
+
+        // Note: Remove hands that surrendered
+        roundPlayers.forEach(player ->
+                player.hands().removeIf(Hand::surrendered));
 
         // Note: Remove hands that bust
         roundPlayers.forEach(player ->
@@ -80,18 +106,20 @@ public class Game {
         if (dealer.hand().bust()) {
             // Note: If dealer is bust, payout each player hand
             roundPlayers.forEach(player -> player.hands().forEach(hand -> {
-                player.payout(minimumBet * 2);
+                int multiplier = hand.doubled() ? 2 : 1;
+                player.payout((minimumBet * 2) * multiplier);
             }));
         } else {
             // Note: If dealer is not bust, payout each player hand that beats the dealer hand
             int finalDealerHandValue = dealer.hand().computeValue();
 
             roundPlayers.forEach(player -> player.hands().forEach(hand -> {
+                int multiplier = hand.doubled() ? 2 : 1;
                 int finalPlayerHandValue = hand.computeValue();
                 if (finalPlayerHandValue > finalDealerHandValue) {
-                    player.payout(minimumBet * 2);
+                    player.payout((minimumBet * 2) * multiplier);
                 } else if (finalPlayerHandValue == finalDealerHandValue) {
-                    player.payout(minimumBet);
+                    player.payout((minimumBet) * multiplier);
                 }
             }));
         }
