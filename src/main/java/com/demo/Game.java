@@ -2,24 +2,25 @@ package com.demo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Game {
-    private static final List<Integer> POTENTIAL_BLACK_JACK_VALUES = List.of(10, 11);
-
-    private final Dealer dealer;
     private final List<Player> players;
     private final int minimumBet;
     private final int deckCount;
-    private Shoe shoe;
 
     public Game(
             List<Player> players,
             int minimumBet,
             int deckCount) {
-        dealer = new Dealer();
         this.players = new ArrayList<>(players);
         this.minimumBet = minimumBet;
         this.deckCount = deckCount;
+    }
+
+    private boolean hasPlayers() {
+        players.removeIf(player -> player.budget() < minimumBet);
+        return !players.isEmpty();
     }
 
     public void deal() {
@@ -27,39 +28,32 @@ public class Game {
             return;
         }
 
-        // Note: Initialize shoe
-        // Note: Initialize dealer and players hands
-        // Note: Take initial bet
-        shoe = new Shoe(deckCount);
+        // Initialize deal
+        Shoe shoe = new Shoe(deckCount);
+        Dealer dealer = new Dealer();
         List<Player> roundPlayers = new ArrayList<>(players);
         roundPlayers.forEach(Player::initializeHand);
-        dealer.initializeHand();
-        players.forEach(player -> player.bet(minimumBet));
+        roundPlayers.forEach(player -> player.bet(minimumBet));
 
-        // Note: Initial deal
-        roundPlayers.forEach(player ->
-            player.hands().forEach(hand -> hand.addCard(shoe.draw())));
+        // Initial draw
+        roundPlayers.forEach(player -> player.hands().forEach(hand -> hand.addCard(shoe.draw())));
         Card dealerUpCard = shoe.draw();
         dealer.hand().addCard(dealerUpCard);
-        roundPlayers.forEach(player ->
-            player.hands().forEach(hand -> hand.addCard(shoe.draw())));
+        roundPlayers.forEach(player -> player.hands().forEach(hand -> hand.addCard(shoe.draw())));
 
-        // Note: Determine initial black jack win
-        int initialDealerHandValue = dealer.hand().computeValue();
-        if (!POTENTIAL_BLACK_JACK_VALUES.contains(initialDealerHandValue)) {
+        // Initial blackjack
+        boolean dealerCanBlackJack = dealerUpCard.rank().equals(Rank.ACE) ||
+            Objects.equals(dealerUpCard.rank().value(), 10);
+        if (!dealerCanBlackJack) {
             roundPlayers.forEach(player ->
                 player.hands().forEach(hand -> {
-                    if (hand.computeValue() == 21) {
+                    if (Objects.equals(hand.computeValue(), 21)) {
                         player.payout((minimumBet * 2) + (minimumBet / 2));
                         hand.setWon();
                     }
                 }));
 
-            // Note: Remove hands that won already
-            roundPlayers.forEach(player ->
-                    player.hands().removeIf(Hand::won));
-
-            // Note: Remove players where all hands won already
+            roundPlayers.forEach(player -> player.hands().removeIf(Hand::won));
             roundPlayers.removeIf(player -> player.hands().isEmpty());
         }
 
@@ -86,50 +80,38 @@ public class Game {
             }
         }
 
-        // Note: Remove hands that surrendered
-        roundPlayers.forEach(player ->
-                player.hands().removeIf(Hand::surrendered));
-
-        // Note: Remove hands that bust
-        roundPlayers.forEach(player ->
-                player.hands().removeIf(Hand::bust));
-
-        // Note: Remove players where all hands bust already
+        roundPlayers.forEach(player -> player.hands().removeIf(Hand::surrendered));
+        roundPlayers.forEach(player -> player.hands().removeIf(Hand::bust));
         roundPlayers.removeIf(player -> player.hands().isEmpty());
 
-        // Note: Dealer deals himself until bust or < 16
         while (!dealer.hand().bust() && dealer.hand().computeValue() < 16) {
             dealer.hand().addCard(shoe.draw());
         }
 
-        // Note: Payout
         if (dealer.hand().bust()) {
-            // Note: If dealer is bust, payout each player hand
             roundPlayers.forEach(player -> player.hands().forEach(hand -> {
                 int multiplier = hand.doubled() ? 2 : 1;
                 player.payout((minimumBet * 2) * multiplier);
             }));
         } else {
-            // Note: If dealer is not bust, payout each player hand that beats the dealer hand
-            int finalDealerHandValue = dealer.hand().computeValue();
+            int dealerHandValue = dealer.hand().computeValue();
 
             roundPlayers.forEach(player -> player.hands().forEach(hand -> {
                 int multiplier = hand.doubled() ? 2 : 1;
-                int finalPlayerHandValue = hand.computeValue();
-                if (finalPlayerHandValue > finalDealerHandValue) {
+                int playerHandValue = hand.computeValue();
+                if (playerHandValue > dealerHandValue) {
                     player.payout((minimumBet * 2) * multiplier);
-                } else if (finalPlayerHandValue == finalDealerHandValue) {
+                } else if (playerHandValue == dealerHandValue) {
                     player.payout((minimumBet) * multiplier);
                 }
             }));
         }
 
-        // Note: Remove players that can't afford minimumBet anymore
         players.removeIf(player -> player.budget() < minimumBet);
     }
 
-    public boolean hasPlayers() {
-        return !players.isEmpty();
+    public void out(Player player) {
+        players.remove(player);
     }
 
     public static void main(String[] args) {
@@ -141,7 +123,19 @@ public class Game {
         while (game.hasPlayers()) {
             dealCounter++;
             game.deal();
+            if (player1.budget() >= 30_000) {
+                game.out(player1);
+            }
+            if (player2.budget() >= 30_000) {
+                game.out(player2);
+            }
+            if (player3.budget() >= 30_000) {
+                game.out(player3);
+            }
         };
         System.out.println("Ended in " + dealCounter + " deals. ");
+        System.out.println("Player1: " + player1.budget());
+        System.out.println("Player2: " + player2.budget());
+        System.out.println("Player3: " + player3.budget());
     }
 }

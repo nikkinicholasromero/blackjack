@@ -22,6 +22,10 @@ public class Hand {
     }
 
     public int computeValue() {
+        if (HandState.BUST.equals(state)) {
+            return 0;
+        }
+
         int total = 0;
 
         cards.sort((a, b) -> b.rank().value() - a.rank().value());
