@@ -98,7 +98,7 @@ public class Game {
         roundPlayers.removeIf(player -> player.hands().isEmpty());
 
         // Note: Dealer deals himself until bust or < 16
-        while (dealer.hand().bust() || dealer.hand().computeValue() < 16) {
+        while (!dealer.hand().bust() && dealer.hand().computeValue() < 16) {
             dealer.hand().addCard(shoe.draw());
         }
 
