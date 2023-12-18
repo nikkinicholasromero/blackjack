@@ -41,6 +41,14 @@ public class Hand {
         return cards.get(0).rank().equals(cards.get(1).rank());
     }
 
+    public boolean containsAce() {
+        return !cards.stream()
+                .map(Card::rank)
+                .filter(Rank.ACE::equals)
+                .toList()
+                .isEmpty();
+    }
+
     public int computeValue() {
         if (HandState.BUST.equals(state)) {
             return 0;
