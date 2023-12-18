@@ -110,6 +110,7 @@ public class Game {
         newHands.get(1).addCard(shoe.draw());
         player.bet(minimumBet);
         player.hands().addAll(newHands);
+        // Handle initial black jack???
 
         newHands.forEach(newHand -> handleHandAction(shoe, dealer, player, newHand));
     }
