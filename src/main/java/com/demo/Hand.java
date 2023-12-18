@@ -41,6 +41,15 @@ public class Hand {
         return cards.get(0).rank().equals(cards.get(1).rank());
     }
 
+    public List<Hand> split() {
+        Hand hand1 = new Hand();
+        Hand hand2 = new Hand();
+        hand1.addCard(cards.get(0));
+        hand2.addCard(cards.get(1));
+        this.setState(HandState.SPLIT);
+        return List.of(hand1, hand2);
+    }
+
     public boolean containsAce() {
         return !cards.stream()
                 .map(Card::rank)

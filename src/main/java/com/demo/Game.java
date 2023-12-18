@@ -2,7 +2,6 @@ package com.demo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Game {
     private final int deckCount;
@@ -65,12 +64,11 @@ public class Game {
     }
 
     private void handlePlayerActions(Shoe shoe, Dealer dealer, List<Player> roundPlayers) {
-        roundPlayers.forEach(player -> {
-            List<Hand> hands = player.hands();
-            for (Hand hand : hands) {
-                handleHandAction(shoe, dealer, player, hand);
-            }
-        });
+        roundPlayers.forEach(player ->
+            player.hands().forEach(hand ->
+                handleHandAction(shoe, dealer, player, hand)
+            )
+        );
         roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.BUST.equals(hand.getState())));
         roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.SURRENDERED.equals(hand.getState())));
         roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.SPLIT.equals(hand.getState())));
@@ -106,7 +104,12 @@ public class Game {
     }
 
     private void handleSplit(Shoe shoe, Dealer dealer, Player player, Hand hand) {
-        // TODO: Handle split
+        List<Hand> newHands = hand.split();
+        newHands.get(0).addCard(shoe.draw());
+        newHands.get(1).addCard(shoe.draw());
+        player.bet(minimumBet);
+
+        newHands.forEach(newHand -> handleHandAction(shoe, dealer, player, newHand));
     }
 
     private void handleDealerSelfDeal(Shoe shoe, Dealer dealer) {
