@@ -64,11 +64,12 @@ public class Game {
     }
 
     private void handlePlayerActions(Shoe shoe, Dealer dealer, List<Player> roundPlayers) {
-        roundPlayers.forEach(player ->
-            player.hands().forEach(hand ->
-                handleHandAction(shoe, dealer, player, hand)
-            )
-        );
+        roundPlayers.forEach(player -> {
+            List<Hand> hands = new ArrayList<>(player.hands());
+            for (Hand hand : hands) {
+                handleHandAction(shoe, dealer, player, hand);
+            }
+        });
         roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.BUST.equals(hand.getState())));
         roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.SURRENDERED.equals(hand.getState())));
         roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.SPLIT.equals(hand.getState())));
@@ -108,6 +109,7 @@ public class Game {
         newHands.get(0).addCard(shoe.draw());
         newHands.get(1).addCard(shoe.draw());
         player.bet(minimumBet);
+        player.hands().addAll(newHands);
 
         newHands.forEach(newHand -> handleHandAction(shoe, dealer, player, newHand));
     }
