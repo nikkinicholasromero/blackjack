@@ -18,7 +18,7 @@ public class Game {
         this.players = new ArrayList<>(players);
     }
 
-    private boolean hasPlayers() {
+    public boolean hasPlayers() {
         return !players.isEmpty();
     }
 
@@ -40,26 +40,25 @@ public class Game {
 
     private void handleInitialDraws(Shoe shoe, Dealer dealer, List<Player> roundPlayers) {
         roundPlayers.forEach(player -> player.hands().forEach(hand -> hand.addCard(shoe.draw())));
-        Card dealerUpCard = shoe.draw();
-        dealer.hand().addCard(dealerUpCard);
+        dealer.hand().addCard(shoe.draw());
         roundPlayers.forEach(player -> player.hands().forEach(hand -> hand.addCard(shoe.draw())));
     }
 
     private void handleInitialBlackJacks(Dealer dealer, List<Player> roundPlayers) {
-        boolean dealerCanBlackJack =
-                Objects.equals(dealer.hand().computeValue(), 10) ||
-                Objects.equals(dealer.hand().computeValue(), 11);
+        int dealerHandValue = dealer.hand().computeValue();
+        boolean dealerCanBlackJack = List.of(10, 11).contains(dealerHandValue);
         if (dealerCanBlackJack) {
             return;
         }
 
         roundPlayers.forEach(player ->
-                player.hands().forEach(hand -> {
-                    if (Objects.equals(hand.computeValue(), 21)) {
-                        player.payout((minimumBet * 2) + (minimumBet / 2));
-                        hand.setWon();
-                    }
-                }));
+            player.hands().forEach(hand -> {
+                if (21 == hand.computeValue()) {
+                    player.payout((minimumBet * 2) + (minimumBet / 2));
+                    hand.setWon();
+                }
+            })
+        );
 
         roundPlayers.forEach(player -> player.hands().removeIf(Hand::won));
         roundPlayers.removeIf(player -> player.hands().isEmpty());
@@ -120,26 +119,5 @@ public class Game {
                 player.payout((minimumBet) * multiplier);
             }
         }));
-    }
-
-    public static void main(String[] args) {
-        int deckCount = 6;
-        int minimumBet = 1_000;
-        int budget = 20_000;
-        Strategy strategy = new BasicStrategy();
-        Player player1 = new Player("Erwin", budget, strategy);
-        Player player2 = new Player("RJ", budget, strategy);
-        Player player3 = new Player("Nikki", budget, strategy);
-        List<Player> players = List.of(player1, player2, player3);
-
-        Game game = new Game(deckCount, minimumBet, players);
-
-        int dealCounter = 0;
-        while (game.hasPlayers()) {
-            dealCounter++;
-            game.deal();
-        }
-
-        System.out.println("Ended in " + dealCounter + " deals. ");
     }
 }
