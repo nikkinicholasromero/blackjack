@@ -12,6 +12,22 @@ public class Hand {
         this.cards = new ArrayList<>();
     }
 
+    public int size() {
+        return cards.size();
+    }
+
+    public boolean isPair() {
+        if (size() != 2) {
+            return false;
+        }
+
+        return cards.get(0).rank().equals(cards.get(1).rank());
+    }
+
+    public Card getCard(int index) {
+        return cards.get(index);
+    }
+
     public void addCard(Card card) {
         cards.add(card);
 
@@ -60,6 +76,10 @@ public class Hand {
         this.state = HandState.DOUBLED;
     }
 
+    public void setSplit() {
+        this.state = HandState.SPLIT;
+    }
+
     public boolean won() {
         return HandState.WON.equals(state);
     }
@@ -74,5 +94,9 @@ public class Hand {
 
     public boolean doubled() {
         return HandState.DOUBLED.equals(state);
+    }
+
+    public boolean split() {
+        return HandState.SPLIT.equals(state);
     }
 }

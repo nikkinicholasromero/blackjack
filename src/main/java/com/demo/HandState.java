@@ -5,5 +5,6 @@ public enum HandState {
     BUST,
     STOOD,
     SURRENDERED,
-    DOUBLED
+    DOUBLED,
+    SPLIT
 }

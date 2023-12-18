@@ -65,31 +65,48 @@ public class Game {
     }
 
     private void handlePlayerActions(Shoe shoe, Dealer dealer, List<Player> roundPlayers) {
-        // TODO: Decide action per player hand
-        for (Player player : roundPlayers) {
-            for (Hand hand : player.hands()) {
-                PlayerAction playerAction = player.decide(dealer.hand(), hand, minimumBet);
-                if (PlayerAction.STAND.equals(playerAction)) {
+        roundPlayers.forEach(player -> {
+            List<Hand> hands = player.hands();
+            for (Hand hand : hands) {
+                handleHandAction(shoe, dealer, player, hand);
+            }
+        });
+        roundPlayers.forEach(player -> player.hands().removeIf(Hand::bust));
+        roundPlayers.forEach(player -> player.hands().removeIf(Hand::surrendered));
+        roundPlayers.forEach(player -> player.hands().removeIf(Hand::split));
+        roundPlayers.removeIf(player -> player.hands().isEmpty());
+    }
+
+    private void handleHandAction(Shoe shoe, Dealer dealer, Player player, Hand hand) {
+        PlayerAction playerAction;
+
+        do {
+            playerAction = player.decide(dealer.hand(), hand, minimumBet);
+            switch (playerAction) {
+                case STAND:
                     hand.setStood();
                     break;
-                }
-                if (PlayerAction.SURRENDER.equals(playerAction)) {
+                case SURRENDER:
                     player.payout(minimumBet / 2);
                     hand.setSurrendered();
                     break;
-                }
-                if (PlayerAction.DOUBLE.equals(playerAction)) {
+                case DOUBLE:
                     player.bet(minimumBet);
                     hand.addCard(shoe.draw());
                     hand.setDoubled();
                     break;
-                }
-                // TODO: HIT & SPLIT
+                case HIT:
+                    hand.addCard(shoe.draw());
+                    break;
+                case SPLIT:
+                    handleSplit(shoe, dealer, player, hand);
+                    break;
             }
-        }
-        roundPlayers.forEach(player -> player.hands().removeIf(Hand::surrendered));
-        roundPlayers.forEach(player -> player.hands().removeIf(Hand::bust));
-        roundPlayers.removeIf(player -> player.hands().isEmpty());
+        } while (PlayerAction.HIT.equals(playerAction) && !hand.bust());
+    }
+
+    private void handleSplit(Shoe shoe, Dealer dealer, Player player, Hand hand) {
+        // TODO: Handle split
     }
 
     private void handleDealerSelfDeal(Shoe shoe, Dealer dealer) {
