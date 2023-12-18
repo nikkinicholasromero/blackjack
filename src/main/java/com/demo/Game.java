@@ -110,9 +110,26 @@ public class Game {
         newHands.get(1).addCard(shoe.draw());
         player.bet(minimumBet);
         player.hands().addAll(newHands);
-        // Handle initial black jack???
+        handleSplitInitialBlackJacks(dealer, player, newHands);
 
         newHands.forEach(newHand -> handleHandAction(shoe, dealer, player, newHand));
+    }
+
+    private void handleSplitInitialBlackJacks(Dealer dealer, Player player, List<Hand> newHands) {
+        int dealerHandValue = dealer.hand().computeValue();
+        boolean dealerCanBlackJack = List.of(10, 11).contains(dealerHandValue);
+        if (dealerCanBlackJack) {
+            return;
+        }
+
+        newHands.forEach(hand -> {
+            if (21 == hand.computeValue()) {
+                player.payout((minimumBet * 2) + (minimumBet / 2));
+                hand.setState(HandState.WON);
+            }
+        });
+
+        player.hands().removeIf(hand -> HandState.WON.equals(hand.getState()));
     }
 
     private void handleDealerSelfDeal(Shoe shoe, Dealer dealer) {
