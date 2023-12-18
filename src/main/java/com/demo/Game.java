@@ -55,12 +55,12 @@ public class Game {
             player.hands().forEach(hand -> {
                 if (21 == hand.computeValue()) {
                     player.payout((minimumBet * 2) + (minimumBet / 2));
-                    hand.setWon();
+                    hand.setState(HandState.WON);
                 }
             })
         );
 
-        roundPlayers.forEach(player -> player.hands().removeIf(Hand::won));
+        roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.WON.equals(hand.getState())));
         roundPlayers.removeIf(player -> player.hands().isEmpty());
     }
 
@@ -71,9 +71,9 @@ public class Game {
                 handleHandAction(shoe, dealer, player, hand);
             }
         });
-        roundPlayers.forEach(player -> player.hands().removeIf(Hand::bust));
-        roundPlayers.forEach(player -> player.hands().removeIf(Hand::surrendered));
-        roundPlayers.forEach(player -> player.hands().removeIf(Hand::split));
+        roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.BUST.equals(hand.getState())));
+        roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.SURRENDERED.equals(hand.getState())));
+        roundPlayers.forEach(player -> player.hands().removeIf(hand -> HandState.SPLIT.equals(hand.getState())));
         roundPlayers.removeIf(player -> player.hands().isEmpty());
     }
 
@@ -84,16 +84,16 @@ public class Game {
             playerAction = player.decide(dealer.hand(), hand, minimumBet);
             switch (playerAction) {
                 case STAND:
-                    hand.setStood();
+                    hand.setState(HandState.STOOD);
                     break;
                 case SURRENDER:
                     player.payout(minimumBet / 2);
-                    hand.setSurrendered();
+                    hand.setState(HandState.SURRENDERED);
                     break;
                 case DOUBLE:
                     player.bet(minimumBet);
                     hand.addCard(shoe.draw());
-                    hand.setDoubled();
+                    hand.setState(HandState.DOUBLED);
                     break;
                 case HIT:
                     hand.addCard(shoe.draw());
@@ -102,7 +102,7 @@ public class Game {
                     handleSplit(shoe, dealer, player, hand);
                     break;
             }
-        } while (PlayerAction.HIT.equals(playerAction) && !hand.bust());
+        } while (PlayerAction.HIT.equals(playerAction) && !HandState.BUST.equals(hand.getState()));
     }
 
     private void handleSplit(Shoe shoe, Dealer dealer, Player player, Hand hand) {
@@ -110,15 +110,15 @@ public class Game {
     }
 
     private void handleDealerSelfDeal(Shoe shoe, Dealer dealer) {
-        while (!dealer.hand().bust() && dealer.hand().computeValue() <= 17) {
+        while (!HandState.BUST.equals(dealer.hand().getState()) && dealer.hand().computeValue() <= 17) {
             dealer.hand().addCard(shoe.draw());
         }
     }
 
     private void handlePayout(Dealer dealer, List<Player> roundPlayers) {
-        if (dealer.hand().bust()) {
+        if (HandState.BUST.equals(dealer.hand().getState())) {
             roundPlayers.forEach(player -> player.hands().forEach(hand -> {
-                int multiplier = hand.doubled() ? 2 : 1;
+                int multiplier = HandState.DOUBLED.equals(hand.getState()) ? 2 : 1;
                 player.payout((minimumBet * 2) * multiplier);
             }));
 
@@ -128,7 +128,7 @@ public class Game {
         int dealerHandValue = dealer.hand().computeValue();
 
         roundPlayers.forEach(player -> player.hands().forEach(hand -> {
-            int multiplier = hand.doubled() ? 2 : 1;
+            int multiplier = HandState.DOUBLED.equals(hand.getState()) ? 2 : 1;
             int playerHandValue = hand.computeValue();
             if (playerHandValue > dealerHandValue) {
                 player.payout((minimumBet * 2) * multiplier);

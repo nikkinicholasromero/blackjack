@@ -12,6 +12,23 @@ public class Hand {
         this.cards = new ArrayList<>();
     }
 
+    public void setState(HandState state) {
+        this.state = state;
+    }
+
+    public HandState getState() {
+        return state;
+    }
+
+    public void addCard(Card card) {
+        cards.add(card);
+
+        int handValue = computeValue();
+        if (handValue > 21) {
+            state = HandState.BUST;
+        }
+    }
+
     public int size() {
         return cards.size();
     }
@@ -22,19 +39,6 @@ public class Hand {
         }
 
         return cards.get(0).rank().equals(cards.get(1).rank());
-    }
-
-    public Card getCard(int index) {
-        return cards.get(index);
-    }
-
-    public void addCard(Card card) {
-        cards.add(card);
-
-        int handValue = computeValue();
-        if (handValue > 21) {
-            state = HandState.BUST;
-        }
     }
 
     public int computeValue() {
@@ -58,45 +62,5 @@ public class Hand {
         }
 
         return total;
-    }
-
-    public void setWon() {
-        this.state = HandState.WON;
-    }
-
-    public void setStood() {
-        this.state = HandState.STOOD;
-    }
-
-    public void setSurrendered() {
-        this.state = HandState.SURRENDERED;
-    }
-
-    public void setDoubled() {
-        this.state = HandState.DOUBLED;
-    }
-
-    public void setSplit() {
-        this.state = HandState.SPLIT;
-    }
-
-    public boolean won() {
-        return HandState.WON.equals(state);
-    }
-
-    public boolean bust() {
-        return HandState.BUST.equals(state);
-    }
-
-    public boolean surrendered() {
-        return HandState.SURRENDERED.equals(state);
-    }
-
-    public boolean doubled() {
-        return HandState.DOUBLED.equals(state);
-    }
-
-    public boolean split() {
-        return HandState.SPLIT.equals(state);
     }
 }
