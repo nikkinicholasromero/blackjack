@@ -6,8 +6,7 @@ import java.util.Objects;
 
 public class Hand {
     private final List<Card> cards;
-    private boolean won = false;
-    private boolean bust = false;
+    private HandState state;
 
     public Hand() {
         this.cards = new ArrayList<>();
@@ -18,7 +17,7 @@ public class Hand {
 
         int handValue = computeValue();
         if (handValue > 21) {
-            bust = true;
+            state = HandState.BUST;
         }
     }
 
@@ -42,14 +41,34 @@ public class Hand {
     }
 
     public void setWon() {
-        this.won = true;
+        this.state = HandState.WON;
+    }
+
+    public void setStood() {
+        this.state = HandState.STOOD;
+    }
+
+    public void setSurrendered() {
+        this.state = HandState.SURRENDERED;
+    }
+
+    public void setDoubled() {
+        this.state = HandState.DOUBLED;
     }
 
     public boolean won() {
-        return won;
+        return HandState.WON.equals(state);
     }
 
     public boolean bust() {
-        return bust;
+        return HandState.BUST.equals(state);
+    }
+
+    public boolean surrendered() {
+        return HandState.SURRENDERED.equals(state);
+    }
+
+    public boolean doubled() {
+        return HandState.DOUBLED.equals(state);
     }
 }
