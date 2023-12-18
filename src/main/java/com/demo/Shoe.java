@@ -18,8 +18,6 @@ public class Shoe {
     }
 
     public Card draw() {
-        decks.removeIf(Deck::isEmpty);
-
         int targetDeck = random.nextInt(0, decks.size());
         Deck deck = decks.get(targetDeck);
         Card card = deck.draw();

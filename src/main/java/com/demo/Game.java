@@ -69,17 +69,17 @@ public class Game {
         // TODO: Decide action per player hand
         for (Player player : roundPlayers) {
             for (Hand hand : player.hands()) {
-                Action action = player.decide(dealer.hand(), hand, minimumBet);
-                if (Action.STAND.equals(action)) {
+                PlayerAction playerAction = player.decide(dealer.hand(), hand, minimumBet);
+                if (PlayerAction.STAND.equals(playerAction)) {
                     hand.setStood();
                     break;
                 }
-                if (Action.SURRENDER.equals(action)) {
+                if (PlayerAction.SURRENDER.equals(playerAction)) {
                     player.payout(minimumBet / 2);
                     hand.setSurrendered();
                     break;
                 }
-                if (Action.DOUBLE.equals(action)) {
+                if (PlayerAction.DOUBLE.equals(playerAction)) {
                     player.bet(minimumBet);
                     hand.addCard(shoe.draw());
                     hand.setDoubled();

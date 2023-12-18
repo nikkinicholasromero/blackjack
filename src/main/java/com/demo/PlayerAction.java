@@ -1,6 +1,6 @@
 package com.demo;
 
-public enum Action {
+public enum PlayerAction {
     STAND,
     HIT,
     SURRENDER,

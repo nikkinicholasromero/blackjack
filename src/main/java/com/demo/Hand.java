@@ -13,6 +13,10 @@ public class Hand {
     }
 
     public void addCard(Card card) {
+        if (HandState.BUST.equals(state)) {
+            return;
+        }
+
         cards.add(card);
 
         int handValue = computeValue();
