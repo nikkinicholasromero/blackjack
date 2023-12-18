@@ -110,26 +110,8 @@ public class Game {
         newHands.get(1).addCard(shoe.draw());
         player.bet(minimumBet);
         player.hands().addAll(newHands);
-        handleSplitInitialBlackJacks(dealer, player, newHands);
 
         newHands.forEach(newHand -> handleHandAction(shoe, dealer, player, newHand));
-    }
-
-    private void handleSplitInitialBlackJacks(Dealer dealer, Player player, List<Hand> newHands) {
-        int dealerHandValue = dealer.hand().computeValue();
-        boolean dealerCanBlackJack = List.of(10, 11).contains(dealerHandValue);
-        if (dealerCanBlackJack) {
-            return;
-        }
-
-        newHands.forEach(hand -> {
-            if (21 == hand.computeValue()) {
-                player.payout((minimumBet * 2) + (minimumBet / 2));
-                hand.setState(HandState.WON);
-            }
-        });
-
-        player.hands().removeIf(hand -> HandState.WON.equals(hand.getState()));
     }
 
     private void handleDealerSelfDeal(Shoe shoe, Dealer dealer) {
@@ -139,24 +121,21 @@ public class Game {
     }
 
     private void handlePayout(Dealer dealer, List<Player> roundPlayers) {
-        if (HandState.BUST.equals(dealer.hand().getState())) {
-            roundPlayers.forEach(player -> player.hands().forEach(hand -> {
-                int multiplier = HandState.DOUBLED.equals(hand.getState()) ? 2 : 1;
-                player.payout((minimumBet * 2) * multiplier);
-            }));
-
-            return;
-        }
-
         int dealerHandValue = dealer.hand().computeValue();
+        boolean isDealerBust = HandState.BUST.equals(dealer.hand().getState());
 
         roundPlayers.forEach(player -> player.hands().forEach(hand -> {
-            int multiplier = HandState.DOUBLED.equals(hand.getState()) ? 2 : 1;
             int playerHandValue = hand.computeValue();
-            if (playerHandValue > dealerHandValue) {
-                player.payout((minimumBet * 2) * multiplier);
+            if (isDealerBust || playerHandValue > dealerHandValue) {
+                if (HandState.DOUBLED.equals(hand.getState())) {
+                    player.payout(minimumBet * 4);
+                } else if (hand.isBlackJack()) {
+                    player.payout((minimumBet * 2) + (minimumBet / 2));
+                } else {
+                    player.payout(minimumBet * 2);
+                }
             } else if (playerHandValue == dealerHandValue) {
-                player.payout((minimumBet) * multiplier);
+                player.payout(minimumBet);
             }
         }));
     }

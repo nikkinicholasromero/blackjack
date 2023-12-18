@@ -58,6 +58,14 @@ public class Hand {
                 .isEmpty();
     }
 
+    public boolean isBlackJack() {
+        if (size() != 2) {
+            return false;
+        }
+
+        return 21 == computeValue();
+    }
+
     public int computeValue() {
         if (HandState.BUST.equals(state)) {
             return 0;

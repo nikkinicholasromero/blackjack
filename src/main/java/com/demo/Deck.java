@@ -20,7 +20,7 @@ public class Deck {
     }
 
     public Card draw() {
-        Card card = cards.get(0);
+        Card card = cards.get(cards.size() - 1);
         cards.remove(card);
         return card;
     }
