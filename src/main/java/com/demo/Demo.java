@@ -19,6 +19,10 @@ public class Demo {
 
         System.out.println("Ended in " + dealCounter + " deals. ");
         System.out.println(initialPlayers);
+        System.out.println("Profit: " + (initialPlayers.stream()
+                .map(Player::budget)
+                .mapToInt(i -> i)
+                .sum() - 60_000));
     }
 
     private static List<Player> initialPlayers() {
