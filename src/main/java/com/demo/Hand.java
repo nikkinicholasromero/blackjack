@@ -58,6 +58,14 @@ public class Hand {
                 .isEmpty();
     }
 
+    public boolean containsAny(List<Rank> ranks) {
+        return !cards.stream()
+                .map(Card::rank)
+                .filter(ranks::contains)
+                .toList()
+                .isEmpty();
+    }
+
     public boolean isBlackJack() {
         if (size() != 2) {
             return false;

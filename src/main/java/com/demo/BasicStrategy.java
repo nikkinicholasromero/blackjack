@@ -1,51 +1,95 @@
 package com.demo;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class BasicStrategy implements Strategy {
-    private final Random random = new Random();
-
     @Override
     public PlayerAction decide(Hand dealerHand, Hand playerHand, boolean playerCanBetMore) {
-        // TODO: Implement decision logic
-        return random(playerHand);
-    }
-
-    private PlayerAction decide(Hand dealerHand, Hand playerHand) {
         int dealerHandValue = dealerHand.computeValue();
         int playerHandValue = playerHand.computeValue();
 
         if ((List.of(9, 10, 11).contains(dealerHandValue) && 16 == playerHandValue) ||
-                (10 == dealerHandValue && 15 == playerHandValue)) {
-            // Surrender
+            (10 == dealerHandValue && 15 == playerHandValue)) {
             return PlayerAction.SURRENDER;
-        } else if (playerHand.isPair()) {
-            // Pair Splitting
-        } else if (playerHand.size() == 2 && playerHand.contains(Rank.ACE)) {
-            // Soft Totals
+        }
+
+        if (playerHand.isPair() && playerCanBetMore) {
+            if (playerHand.contains(Rank.ACE) || playerHand.contains(Rank.EIGHT)) {
+                return PlayerAction.SPLIT;
+            }
+
+            if (playerHand.contains(Rank.NINE) &&
+                dealerHand.containsAny(List.of(Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE, Rank.SIX, Rank.EIGHT, Rank.NINE))) {
+                return PlayerAction.SPLIT;
+            }
+
+            if (playerHand.containsAny(List.of(Rank.TWO, Rank.THREE, Rank.SEVEN)) &&
+                dealerHand.containsAny(List.of(Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE, Rank.SIX, Rank.SEVEN))) {
+                return PlayerAction.SPLIT;
+            }
+
+            if (playerHand.contains(Rank.SIX) &&
+                dealerHand.containsAny(List.of(Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE, Rank.SIX))) {
+                return PlayerAction.SPLIT;
+            }
+
+            if (playerHand.contains(Rank.FOUR) &&
+                dealerHand.containsAny(List.of(Rank.FIVE, Rank.SIX))) {
+                return PlayerAction.SPLIT;
+            }
+        }
+
+        if (playerHand.size() == 2 && playerHand.contains(Rank.ACE)) {
+            if (playerHand.contains(Rank.NINE)) {
+                return PlayerAction.STAND;
+            }
+
+            if (playerHand.contains(Rank.EIGHT) &&
+                dealerHand.containsAny(List.of(
+                        Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE,
+                        Rank.SEVEN, Rank.EIGHT, Rank.NINE, Rank.TEN,
+                        Rank.JACK, Rank.QUEEN, Rank.KING, Rank.ACE))) {
+                return PlayerAction.STAND;
+            }
+
+            if (playerHand.contains(Rank.EIGHT) && dealerHand.contains(Rank.SIX) && playerCanBetMore) {
+                return PlayerAction.DOUBLE;
+            }
+
+            if (playerHand.contains(Rank.SEVEN) &&
+                dealerHand.containsAny(List.of(Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE, Rank.SIX)) &&
+                playerCanBetMore) {
+                return PlayerAction.DOUBLE;
+            }
+
+            if (playerHand.contains(Rank.SEVEN) &&
+                    dealerHand.containsAny(List.of(Rank.SEVEN, Rank.EIGHT))) {
+                return PlayerAction.STAND;
+            }
+
+            if (playerHand.contains(Rank.SIX) &&
+                dealerHand.containsAny(List.of(Rank.THREE, Rank.FOUR, Rank.FIVE, Rank.SIX)) &&
+                playerCanBetMore) {
+                return PlayerAction.DOUBLE;
+            }
+
+            if (playerHand.containsAny(List.of(Rank.FIVE, Rank.FOUR)) &&
+                dealerHand.containsAny(List.of(Rank.FOUR, Rank.FIVE, Rank.SIX)) &&
+                playerCanBetMore) {
+                return PlayerAction.DOUBLE;
+            }
+
+            if (playerHand.containsAny(List.of(Rank.THREE, Rank.TWO)) &&
+                dealerHand.containsAny(List.of(Rank.FIVE, Rank.SIX)) &&
+                playerCanBetMore) {
+                return PlayerAction.DOUBLE;
+            }
+
+            return PlayerAction.HIT;
         } else {
             // Hard Totals
         }
 
         return PlayerAction.STAND;
-    }
-
-    private PlayerAction random(Hand playerHand) {
-        List<PlayerAction> playerActionList = new ArrayList<>();
-        playerActionList.add(PlayerAction.STAND);
-        playerActionList.add(PlayerAction.HIT);
-        playerActionList.add(PlayerAction.SURRENDER);
-
-        if (2 == playerHand.size()) {
-            playerActionList.add(PlayerAction.DOUBLE);
-        }
-
-        if (playerHand.isPair()) {
-            playerActionList.add(PlayerAction.SPLIT);
-        }
-
-        return playerActionList.get(random.nextInt(0, playerActionList.size()));
     }
 }
