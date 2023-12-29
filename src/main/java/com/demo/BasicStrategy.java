@@ -86,8 +86,39 @@ public class BasicStrategy implements Strategy {
             }
 
             return PlayerAction.HIT;
-        } else {
-            // Hard Totals
+        }
+
+        if (List.of(16, 15, 14, 13).contains(playerHandValue) &&
+            dealerHand.containsAny(List.of(
+                    Rank.SEVEN, Rank.EIGHT, Rank.NINE, Rank.TEN,
+                    Rank.JACK, Rank.QUEEN, Rank.KING, Rank.ACE))) {
+            return PlayerAction.HIT;
+        }
+
+        if (12 == playerHandValue &&
+            dealerHand.containsAny(List.of(
+                    Rank.TWO, Rank.THREE,
+                    Rank.SEVEN, Rank.EIGHT, Rank.NINE, Rank.TEN,
+                    Rank.JACK, Rank.QUEEN, Rank.KING, Rank.ACE))) {
+            return PlayerAction.HIT;
+        }
+
+        if (11 == playerHandValue && playerCanBetMore) {
+            return PlayerAction.DOUBLE;
+        }
+
+        if (10 == playerHandValue &&
+                dealerHand.containsAny(List.of(
+                        Rank.TWO, Rank.THREE, Rank.FOUR, Rank.FIVE,
+                        Rank.SIX, Rank.SEVEN, Rank.EIGHT, Rank.NINE)) &&
+                playerCanBetMore) {
+            return PlayerAction.DOUBLE;
+        }
+
+        if (9 == playerHandValue &&
+                dealerHand.containsAny(List.of(Rank.THREE, Rank.FOUR, Rank.FIVE, Rank.SIX)) &&
+                playerCanBetMore) {
+            return PlayerAction.DOUBLE;
         }
 
         return PlayerAction.STAND;

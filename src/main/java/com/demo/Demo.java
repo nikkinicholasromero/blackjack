@@ -37,7 +37,7 @@ public class Demo {
     private static List<Player> activePlayers(List<Player> players, int minimumBet) {
         return players.stream()
                 .filter(e -> e.budget() >= minimumBet)
-                .filter(e -> e.budget() <= (25_000))
+                .filter(e -> e.budget() <= (30_000))
                 .toList();
     }
 }
