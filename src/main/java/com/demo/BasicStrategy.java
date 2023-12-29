@@ -115,10 +115,27 @@ public class BasicStrategy implements Strategy {
             return PlayerAction.DOUBLE;
         }
 
+        if (10 == playerHandValue &&
+                dealerHand.containsAny(List.of(
+                        Rank.NINE, Rank.TEN,
+                        Rank.JACK, Rank.QUEEN, Rank.KING, Rank.ACE))) {
+            return PlayerAction.HIT;
+        }
+
         if (9 == playerHandValue &&
                 dealerHand.containsAny(List.of(Rank.THREE, Rank.FOUR, Rank.FIVE, Rank.SIX)) &&
                 playerCanBetMore) {
             return PlayerAction.DOUBLE;
+        }
+
+        if (9 == playerHandValue &&
+                dealerHand.containsAny(List.of(Rank.TWO, Rank.SEVEN, Rank.EIGHT, Rank.NINE, Rank.TEN,
+                        Rank.JACK, Rank.QUEEN, Rank.KING, Rank.ACE))) {
+            return PlayerAction.HIT;
+        }
+
+        if (8 == playerHandValue) {
+            return PlayerAction.HIT;
         }
 
         return PlayerAction.STAND;

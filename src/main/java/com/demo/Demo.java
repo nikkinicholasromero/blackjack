@@ -22,7 +22,7 @@ public class Demo {
     }
 
     private static List<Player> initialPlayers() {
-        int budget = 20_000;
+        int budget = 10_000;
         Strategy strategy = new BasicStrategy();
         List<Player> players = new ArrayList<>();
         players.add(new Player("Erwin", budget, strategy));
@@ -37,7 +37,7 @@ public class Demo {
     private static List<Player> activePlayers(List<Player> players, int minimumBet) {
         return players.stream()
                 .filter(e -> e.budget() >= minimumBet)
-                .filter(e -> e.budget() <= (30_000))
+                .filter(e -> e.budget() <= (15_000))
                 .toList();
     }
 }
