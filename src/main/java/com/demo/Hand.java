@@ -50,10 +50,10 @@ public class Hand {
         return List.of(hand1, hand2);
     }
 
-    public boolean containsAce() {
+    public boolean contains(Rank rank) {
         return !cards.stream()
                 .map(Card::rank)
-                .filter(Rank.ACE::equals)
+                .filter(rank::equals)
                 .toList()
                 .isEmpty();
     }

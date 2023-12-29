@@ -23,7 +23,7 @@ public class BasicStrategy implements Strategy {
             return PlayerAction.SURRENDER;
         } else if (playerHand.isPair()) {
             // Pair Splitting
-        } else if (playerHand.size() == 2 && playerHand.containsAce()) {
+        } else if (playerHand.size() == 2 && playerHand.contains(Rank.ACE)) {
             // Soft Totals
         } else {
             // Hard Totals
