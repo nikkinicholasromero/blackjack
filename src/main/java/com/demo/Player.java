@@ -42,4 +42,9 @@ public class Player {
     public PlayerAction decide(Hand dealerHand, Hand playerHand, int minimumBet) {
         return strategy.decide(dealerHand, playerHand, budget >= minimumBet);
     }
+
+    @Override
+    public String toString() {
+        return name + ":" + budget;
+    }
 }

@@ -17,10 +17,6 @@ public class Game {
         this.players = new ArrayList<>(players);
     }
 
-    public boolean hasPlayers() {
-        return !players.isEmpty();
-    }
-
     public void deal() {
         Shoe shoe = new Shoe(deckCount);
         Dealer dealer = new Dealer();
