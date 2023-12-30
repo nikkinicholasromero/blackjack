@@ -22,7 +22,7 @@ public class Demo {
         System.out.println("Profit: " + (initialPlayers.stream()
                 .map(Player::budget)
                 .mapToInt(i -> i)
-                .sum() - 60_000));
+                .sum() - 120_000));
     }
 
     private static List<Player> initialPlayers() {
